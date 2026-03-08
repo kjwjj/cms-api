@@ -30,9 +30,6 @@ public class Member {
     @Column(name="last_modified_date")
     private LocalDateTime lastModifiedDate;
 
-    @Column(name="last_modified_by", length=50)
-    private String lastModifiedBy;
-
     @Column(length=20, nullable=false)
     private String role;
 

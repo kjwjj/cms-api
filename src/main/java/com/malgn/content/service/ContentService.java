@@ -18,10 +18,12 @@ public class ContentService {
     private final ContentRepository contentRepository;
 
     public Content create(Content content) {
+
         return contentRepository.save(content);
     }
 
     public Page<Content> list(Pageable pageable) {
+
         return contentRepository.findAll(pageable);
     }
 
@@ -29,11 +31,18 @@ public class ContentService {
         return contentRepository.findById(id);
     }
 
+    public Optional<Content> getWithViewCount(Long id) {
+        contentRepository.increaseViewCount(id);
+        return contentRepository.findById(id);
+    }
+
     public Content update(Content content) {
+
         return contentRepository.save(content);
     }
 
     public void delete(Long id) {
+
         contentRepository.deleteById(id);
     }
 }

@@ -1,7 +1,9 @@
 package com.malgn.content.controller;
 
+import com.malgn.content.dto.ContentCreateDto;
 import com.malgn.content.entity.Content;
 import com.malgn.content.service.ContentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +20,13 @@ public class ContentController {
     private final ContentService contentService;
 
     @PostMapping
-    public ResponseEntity<Content> create(@RequestBody Content content, Authentication auth) {
-        content.setCreatedBy(auth.getName());
+    public ResponseEntity<Content> create(@Valid @RequestBody ContentCreateDto dto, Authentication auth) {
+        Content content = Content.builder()
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .createdBy(auth.getName())
+                .build();
+
         return ResponseEntity.ok(contentService.create(content));
     }
 
@@ -28,26 +35,18 @@ public class ContentController {
         return ResponseEntity.ok(contentService.list(pageable));
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Content> get(@PathVariable Long id) {
-//        return contentService.get(id)
-//                .map(ResponseEntity::ok)
-//                .orElse(ResponseEntity.notFound().build());
-//    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Content> get(@PathVariable Long id) {
-        return contentService.get(id).map(existing -> {
-            existing.setViewCount(existing.getViewCount() + 1);
-            contentService.update(existing);
-            return ResponseEntity.ok(existing);
-        }).orElse(ResponseEntity.notFound().build());
+        return contentService.getWithViewCount(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
 
 
     @PutMapping("/{id}")
     public ResponseEntity<Content> update(@PathVariable Long id,
-                                          @RequestBody ContentUpdateDto dto,
+                                          @Valid @RequestBody ContentUpdateDto dto,
                                           Authentication auth) {
         return contentService.get(id).map(existing -> {
             boolean isAdmin = auth.getAuthorities().stream()

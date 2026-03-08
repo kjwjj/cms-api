@@ -47,6 +47,7 @@ public class Content {
 
     @PreUpdate
     public void preUpdate(){
+
         lastModifiedDate = LocalDateTime.now();
     }
 }

@@ -8,8 +8,7 @@ spring:
     name: simple-cms-api
   h2:
     console:
-      enabled: true
-#      on
+      enabled: on
   sql:
     init:
       mode: embedded
